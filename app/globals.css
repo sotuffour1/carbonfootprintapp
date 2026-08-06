@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #2E7D32;
+    --secondary: #00838F;
+    --warning: #F9A825;
+    --danger: #C62828;
+    --bg-light: #FAFAFA;
+    --bg-dark: #121212;
+    --text-color: #1A1A1A;
+  }
+
+  body {
+    background-color: #FAFAFA;
+    color: #1A1A1A;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  .dark body {
+    background-color: #121212;
+    color: #F5F5F5;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom smooth transition classes */
+.transition-theme {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
