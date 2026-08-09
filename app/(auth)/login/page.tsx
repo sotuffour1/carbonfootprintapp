@@ -4,7 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Leaf, LogIn, Sparkles } from 'lucide-react';
+import { createBrowserClient } from '@supabase/ssr';
 import { dataService } from '@/lib/supabase/client';
+
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,21 +24,16 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    try {
-      // Set user state
-      dataService.setCurrentUser({
-        id: 'user-' + Date.now(),
-        email,
-        name: email.split('@')[0] || 'User',
-        role: email.toLowerCase().includes('admin') ? 'ADMIN' : 'USER'
-      });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
+    if (error) {
+      setError(error.message);
+    } else {
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Failed to log in');
-    } finally {
-      setLoading(false);
+      router.refresh();
     }
+
+    setLoading(false);
   };
 
   const handleDemoUser = () => {
@@ -42,6 +43,7 @@ export default function LoginPage() {
       name: 'Jane Doe',
       role: 'USER'
     });
+    document.cookie = 'footprint_auth=demo-user; path=/; max-age=86400';
     router.push('/dashboard');
   };
 
@@ -52,6 +54,7 @@ export default function LoginPage() {
       name: 'Admin User',
       role: 'ADMIN'
     });
+    document.cookie = 'footprint_auth=demo-admin; path=/; max-age=86400';
     router.push('/admin');
   };
 
